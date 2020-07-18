@@ -8,6 +8,8 @@ public class Graph {
     private int nVerts;         // Текущее количество вершин
     private int nTree;          // Количество вершин в дереве
     private DistPar sPath[];    // Массив кратчайших путей
+    private int currentVert;
+    private int startToCurrent;
 
     public Graph() {
         vertexList = new Vertex[MAX_VERTS];
@@ -23,15 +25,56 @@ public class Graph {
         }
     }
 
+    // метод добавления вершины
     public void addVertex(char lab) {
         vertexList[nVerts++] = new Vertex(lab);
     }
 
+    // метод добавления ребра
     public void addEdge(int start, int end, int weight) {
         adjMat[start][end] = weight;
     }
 
+    // выбор кратчайших путей
     public void path() {
-        System.out.println("path");
+        int startTree = 0;
+        vertexList[startTree].isInTree = true;
+        nTree = 1;
+
+        // перемещение строки расстояний из adjMat в sPath
+        for (int i = 0; i < nVerts; i++) {
+            int tempDist = adjMat[startTree][i];
+            sPath[i] = new DistPar(startTree, tempDist);
+        }
+
+        // пока все вершины не окажутся в дереве
+        while (nTree < nVerts) {
+            int indexMin = getMin();
+            int minDist = sPath[indexMin].distance;
+
+            if (minDist == INFINITY) {
+                System.out.println("There are unreachble vertices");
+                break;
+            } else {
+                currentVert = indexMin;
+                startToCurrent = sPath[indexMin].distance;
+            }
+            vertexList[currentVert].isInTree = true;
+            nTree++;
+        }
+    }
+
+    // возвращает индекс элемента с наименьшим расстоянием
+    private int getMin() {
+        int minDist = INFINITY;
+        int indexMin = 0;
+
+        for (int i = 0; i < nVerts; i++) {
+            if (!vertexList[i].isInTree && sPath[i].distance < minDist) {
+                minDist = sPath[i].distance;
+                indexMin = i;
+            }
+        }
+        return indexMin;
     }
 }
