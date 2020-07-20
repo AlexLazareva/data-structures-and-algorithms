@@ -17,12 +17,12 @@ public class Graph {
         nVerts = 0;
         nTree = 0;
 
-        for (int i = 0; i < MAX_VERTS; i++) { // Заполняем матрицу смежности бесконечными расстояниями
-            for (int j = 0; j < MAX_VERTS; j++) {
-                adjMat[i][j] = INFINITY;
-                sPath = new DistPar[MAX_VERTS]; // кратчайшие пути
+        for (int j = 0; j < MAX_VERTS; j++) { // Заполняем матрицу смежности бесконечными расстояниями
+            for (int k = 0; k < MAX_VERTS; k++) {
+                adjMat[j][k] = INFINITY;
             }
         }
+        sPath = new DistPar[MAX_VERTS]; // кратчайшие пути
     }
 
     // метод добавления вершины
@@ -61,6 +61,30 @@ public class Graph {
             }
             vertexList[currentVert].isInTree = true;
             nTree++;
+            adjust_sPath();
+        }
+
+        // Очистка дерева
+        displayPaths();
+        nTree = 0;
+
+        for (int i = 0; i < nVerts; i++) {
+            vertexList[i].isInTree = false;
+        }
+    }
+
+    private void displayPaths() {
+        for (int i = 0; i < nVerts; i++) {
+            System.out.print(vertexList[i].label + "=");
+
+            if (sPath[i].distance == INFINITY) {
+                System.out.print("inf");
+            } else {
+                System.out.print(sPath[i].distance);
+                char parent = vertexList[sPath[i].parentVert].label;
+                System.out.print("(" + parent + ") ");
+            }
+            System.out.println("");
         }
     }
 
@@ -69,12 +93,34 @@ public class Graph {
         int minDist = INFINITY;
         int indexMin = 0;
 
-        for (int i = 0; i < nVerts; i++) {
+        for (int i = 1; i < nVerts; i++) {
             if (!vertexList[i].isInTree && sPath[i].distance < minDist) {
                 minDist = sPath[i].distance;
                 indexMin = i;
             }
         }
         return indexMin;
+    }
+
+    private void adjust_sPath() {
+        int column = 1; // пропускаем начальную вершину
+
+        while (column < nVerts) {
+            // Если вершина column уже включена в дерево, она пропускается
+            if (vertexList[column].isInTree) {
+                column++;
+                continue;
+            }
+
+            int currentToFringe = adjMat[currentVert][column];
+            int startToFringe = startToCurrent + currentToFringe;
+            int sPathDist = sPath[column].distance;
+
+            if (startToFringe < sPathDist) {
+                sPath[column].distance = currentVert;
+                sPath[column].parentVert = startToFringe;
+            }
+            column++;
+        }
     }
 }

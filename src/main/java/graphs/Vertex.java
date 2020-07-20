@@ -1,7 +1,7 @@
 package graphs;
 
 public class Vertex {
-    private char label; // Метка вершины
+    public char label; // Метка вершины
     public boolean isInTree;
 
     public Vertex(char label) {

@@ -20,8 +20,8 @@ public class PathApp {
         theGraph.addEdge(3, 4, 70); // DE 70
         theGraph.addEdge(4, 1, 50); // EB 50
 
-        theGraph.path();
-
         System.out.println("Shortest paths");
+        theGraph.path();
+        System.out.println();
     }
 }
